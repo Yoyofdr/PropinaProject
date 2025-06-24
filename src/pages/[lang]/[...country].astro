@@ -15,10 +15,10 @@ export async function getStaticPaths() {
   }
   return paths;
 }
-import CountryLayout from '../../layouts/CountryLayout.astro';
+
+import CountryLayout from '../../layouts/CountryLayoutNuevo.astro';
 const { lang, country } = Astro.params;
 
-// Cargar contenido del país
 let content = {};
 try {
   content = (await import(`../../../content/${lang}/${country}.json`)).default;
@@ -26,7 +26,6 @@ try {
   return Astro.redirect('/404');
 }
 
-// Cargar traducciones
 let translations = {};
 try {
   translations = (await import(`../../../locales/${lang}.json`)).default;
@@ -40,18 +39,17 @@ const mergedTranslations = new Proxy(translations, {
   }
 });
 
-// Generar availableLangs y hreflangs usando import.meta.glob
-const modules = import.meta.glob('../../../content/*/' + country + '.json');
+const allCountryModules = import.meta.glob('../../../content/*/*.json');
 const availableLangs = [];
 const hreflangs = {};
-for (const path in modules) {
-  const match = path.match(/content\/([^/]+)\//);
-  if (match) {
+for (const path in allCountryModules) {
+  const match = path.match(/content\/([^/]+)\/([^/]+)\.json$/);
+  if (match && match[2] === country) {
     const l = match[1];
-    const data = (await modules[path]()).default;
+    const data = (await allCountryModules[path]()).default;
     availableLangs.push(l);
     hreflangs[l] = data.slug;
   }
 }
 ---
-<CountryLayout content={content} translations={mergedTranslations} availableLangs={availableLangs} currentLang={lang} countrySlug={country} hreflangs={hreflangs} />
+<CountryLayout content={content} translations={mergedTranslations} availableLangs={availableLangs} currentLang={lang} countrySlug={country} hreflangs={hreflangs} /> 

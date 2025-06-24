@@ -1,0 +1,58 @@
+---
+export async function getStaticPaths() {
+  const modules = import.meta.glob('../../../content/*/*.json');
+  const paths = [];
+  for (const path in modules) {
+    const match = path.match(/content\/([^/]+)\/([^/]+)\.json$/);
+    if (match) {
+      const lang = match[1];
+      const mod = await modules[path]();
+      const slug = mod.default?.slug || mod.slug;
+      if (slug) {
+        paths.push({ params: { lang, country: slug } });
+      }
+    }
+  }
+  return paths;
+}
+// import CountryLayout from '../../layouts/CountryLayoutTest.astro';
+import CountryLayout from '../../layouts/CountryLayoutNuevo.astro';
+const { lang, country } = Astro.params;
+
+// Cargar contenido del país
+let content = {};
+try {
+  content = (await import(`../../../content/${lang}/${country}.json`)).default;
+} catch (e) {
+  return Astro.redirect('/404');
+}
+
+// Cargar traducciones
+let translations = {};
+try {
+  translations = (await import(`../../../locales/${lang}.json`)).default;
+} catch (e) {
+  translations = {};
+}
+const translationsEn = (await import(`../../../locales/en.json`)).default;
+const mergedTranslations = new Proxy(translations, {
+  get(target, prop) {
+    return prop in target ? target[prop] : translationsEn[prop];
+  }
+});
+
+// Generar availableLangs y hreflangs usando import.meta.glob
+const allCountryModules = import.meta.glob('../../../content/*/*.json');
+const availableLangs = [];
+const hreflangs = {};
+for (const path in allCountryModules) {
+  const match = path.match(/content\/([^/]+)\/([^/]+)\.json$/);
+  if (match && match[2] === country) {
+    const l = match[1];
+    const data = (await allCountryModules[path]()).default;
+    availableLangs.push(l);
+    hreflangs[l] = data.slug;
+  }
+}
+---
+<CountryLayout content={content} translations={mergedTranslations} availableLangs={availableLangs} currentLang={lang} countrySlug={country} hreflangs={hreflangs} />
