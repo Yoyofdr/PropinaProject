@@ -1,0 +1,53 @@
+---
+export async function getStaticPaths() {
+  const fs = await import('fs');
+  const path = await import('path');
+  const langs = fs.readdirSync(path.resolve('content'));
+  let paths = [];
+  langs.forEach(lang => {
+    const files = fs.readdirSync(path.resolve('content', lang));
+    files.forEach(file => {
+      if (file.endsWith('.json')) {
+        const countrySlug = file.replace('.json', '');
+        paths.push({
+          params: { lang, country: countrySlug }
+        });
+      }
+    });
+  });
+  return paths;
+}
+import CountryLayout from '../../layouts/CountryLayout.astro';
+import fs from 'fs';
+import path from 'path';
+const { lang, country } = Astro.params;
+const countrySlug = Array.isArray(country) ? country.join('-') : country;
+const contentPath = `../../../content/${lang}/${countrySlug}.json`;
+let content = {};
+try {
+  content = await import(contentPath).then(m => m.default || m);
+} catch (e) {
+  return Astro.redirect('/404');
+}
+let translations = {};
+try {
+  translations = await import(`../../../locales/${lang}.json`).then(m => m.default || m);
+} catch (e) {
+  translations = {};
+}
+const translationsEn = await import(`../../../locales/en.json`).then(m => m.default || m);
+// Fallback: si falta una clave en el idioma, usa la de inglés
+const mergedTranslations = new Proxy(translations, {
+  get(target, prop) {
+    return prop in target ? target[prop] : translationsEn[prop];
+  }
+});
+const availableLangs = fs.readdirSync(path.resolve('content')).filter(f => fs.existsSync(path.resolve('content', f, `${countrySlug}.json`)));
+// Generar hreflangs para todos los idiomas disponibles de ese país
+const hreflangs = {};
+availableLangs.forEach(l => {
+  const data = JSON.parse(fs.readFileSync(path.resolve('content', l, `${countrySlug}.json`), 'utf-8'));
+  hreflangs[l] = data.slug;
+});
+---
+<CountryLayout content={content} translations={mergedTranslations} availableLangs={availableLangs} currentLang={lang} countrySlug={countrySlug} hreflangs={hreflangs} />
