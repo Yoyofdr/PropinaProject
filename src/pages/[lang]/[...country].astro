@@ -16,36 +16,42 @@ export async function getStaticPaths() {
   return paths;
 }
 import CountryLayout from '../../layouts/CountryLayout.astro';
-import fs from 'fs';
-import path from 'path';
 const { lang, country } = Astro.params;
-const countrySlug = Array.isArray(country) ? country.join('-') : country;
-const contentPath = `../../../content/${lang}/${countrySlug}.json`;
+
+// Cargar contenido del país
 let content = {};
 try {
-  content = await import(contentPath).then(m => m.default || m);
+  content = (await import(`../../../content/${lang}/${country}.json`)).default;
 } catch (e) {
   return Astro.redirect('/404');
 }
+
+// Cargar traducciones
 let translations = {};
 try {
-  translations = await import(`../../../locales/${lang}.json`).then(m => m.default || m);
+  translations = (await import(`../../../locales/${lang}.json`)).default;
 } catch (e) {
   translations = {};
 }
-const translationsEn = await import(`../../../locales/en.json`).then(m => m.default || m);
-// Fallback: si falta una clave en el idioma, usa la de inglés
+const translationsEn = (await import(`../../../locales/en.json`)).default;
 const mergedTranslations = new Proxy(translations, {
   get(target, prop) {
     return prop in target ? target[prop] : translationsEn[prop];
   }
 });
-const availableLangs = fs.readdirSync(path.resolve('content')).filter(f => fs.existsSync(path.resolve('content', f, `${countrySlug}.json`)));
-// Generar hreflangs para todos los idiomas disponibles de ese país
+
+// Generar availableLangs y hreflangs usando import.meta.glob
+const modules = import.meta.glob('../../../content/*/' + country + '.json');
+const availableLangs = [];
 const hreflangs = {};
-availableLangs.forEach(l => {
-  const data = JSON.parse(fs.readFileSync(path.resolve('content', l, `${countrySlug}.json`), 'utf-8'));
-  hreflangs[l] = data.slug;
-});
+for (const path in modules) {
+  const match = path.match(/content\/([^/]+)\//);
+  if (match) {
+    const l = match[1];
+    const data = (await modules[path]()).default;
+    availableLangs.push(l);
+    hreflangs[l] = data.slug;
+  }
+}
 ---
-<CountryLayout content={content} translations={mergedTranslations} availableLangs={availableLangs} currentLang={lang} countrySlug={countrySlug} hreflangs={hreflangs} />
+<CountryLayout content={content} translations={mergedTranslations} availableLangs={availableLangs} currentLang={lang} countrySlug={country} hreflangs={hreflangs} />
