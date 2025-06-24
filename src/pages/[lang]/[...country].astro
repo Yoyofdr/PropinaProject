@@ -8,10 +8,13 @@ export async function getStaticPaths() {
     const files = fs.readdirSync(path.resolve('content', lang));
     files.forEach(file => {
       if (file.endsWith('.json')) {
-        const countrySlug = file.replace('.json', '');
-        paths.push({
-          params: { lang, country: countrySlug }
-        });
+        const filePath = path.resolve('content', lang, file);
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        if (data.slug) {
+          paths.push({
+            params: { lang, country: data.slug }
+          });
+        }
       }
     });
   });
