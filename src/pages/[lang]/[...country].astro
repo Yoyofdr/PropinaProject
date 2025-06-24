@@ -1,23 +1,18 @@
 ---
 export async function getStaticPaths() {
-  const fs = await import('fs');
-  const path = await import('path');
-  const langs = fs.readdirSync(path.resolve('content'));
-  let paths = [];
-  langs.forEach(lang => {
-    const files = fs.readdirSync(path.resolve('content', lang));
-    files.forEach(file => {
-      if (file.endsWith('.json')) {
-        const filePath = path.resolve('content', lang, file);
-        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
-        if (data.slug) {
-          paths.push({
-            params: { lang, country: data.slug }
-          });
-        }
+  const modules = import.meta.glob('../../../content/*/*.json');
+  const paths = [];
+  for (const path in modules) {
+    const match = path.match(/content\/([^/]+)\/([^/]+)\.json$/);
+    if (match) {
+      const lang = match[1];
+      const mod = await modules[path]();
+      const slug = mod.default?.slug || mod.slug;
+      if (slug) {
+        paths.push({ params: { lang, country: slug } });
       }
-    });
-  });
+    }
+  }
   return paths;
 }
 import CountryLayout from '../../layouts/CountryLayout.astro';
