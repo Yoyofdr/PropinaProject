@@ -1,0 +1,25 @@
+---
+const { tipPercentages, translations } = Astro.props;
+---
+<table class="country-table">
+  <thead>
+    <tr>
+      <th>{translations["service_type"]}</th>
+      <th>{translations["typical_tip"]}</th>
+      <th>Nota</th>
+    </tr>
+  </thead>
+  <tbody>
+    {Object.entries(tipPercentages).map(([service, data]) => (
+      <tr>
+        <td>{service}</td>
+        <td>{data.percent}%</td>
+        <td>{data.note}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+<style>
+.country-table { margin: 2em 0; border-collapse: collapse; width: 100%; max-width: 600px; }
+.country-table th, .country-table td { border: 1px solid #eee; padding: 0.5em; text-align: left; }
+</style>

@@ -1,0 +1,20 @@
+{
+  "site_title": "Calculadora de Propinas Global",
+  "site_description": "Descubre cuánto dejar de propina en cualquier país del mundo. Calculadora interactiva y datos por servicio.",
+  "tip_calculator": "Calculadora de propinas",
+  "amount": "Monto",
+  "country": "País",
+  "service_type": "Tipo de servicio",
+  "calculate": "Calcular",
+  "typical_tip": "Propina típica",
+  "total_with_tip": "Total con propina",
+  "faq": "Preguntas frecuentes",
+  "related_countries": "Países relacionados",
+  "change_language": "Cambiar idioma",
+  "no_data": "No hay datos disponibles para este país.",
+  "select_service": "Selecciona un servicio",
+  "other_countries": "Otros países",
+  "adsense_notice": "Este sitio utiliza Google AdSense para monetización.",
+  "affiliate_notice": "Los enlaces de afiliados pueden generar una comisión para nosotros sin costo extra para ti.",
+  "back_home": "Volver al inicio"
+}

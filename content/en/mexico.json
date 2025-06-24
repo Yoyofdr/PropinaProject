@@ -1,0 +1,28 @@
+{
+  "country": "Mexico",
+  "slug": "tipping-in-mexico",
+  "language": "en",
+  "tip_percentages": {
+    "restaurant": 10,
+    "bar": 10,
+    "hotel": 10,
+    "taxi": 0
+  },
+  "faq": [
+    {
+      "q": "Is tipping mandatory in Mexico?",
+      "a": "Tipping is not mandatory, but it is customary to leave between 10% and 15% in restaurants."
+    },
+    {
+      "q": "Do you tip taxi drivers?",
+      "a": "It is not common to tip taxi drivers, but you can round up the fare."
+    }
+  ],
+  "related_countries": ["en/tipping-in-usa", "es/propina-en-espana"],
+  "adsense_slots": ["main", "footer"],
+  "affiliate_links": {
+    "wise": "https://wise.com/en/",
+    "booking": "https://www.booking.com/country/mx.en.html",
+    "safetywing": "https://safetywing.com/"
+  }
+}

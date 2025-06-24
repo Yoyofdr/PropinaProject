@@ -1,0 +1,29 @@
+---
+const { faq, translations } = Astro.props;
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faq.map(item => ({
+    "@type": "Question",
+    "name": item.q,
+    "acceptedAnswer": { "@type": "Answer", "text": item.a }
+  }))
+};
+---
+<section class="faq-block">
+  <h2>{translations["faq"]}</h2>
+  <ul>
+    {faq.map(item => (
+      <li>
+        <strong>{item.q}</strong>
+        <div>{item.a}</div>
+      </li>
+    ))}
+  </ul>
+  <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+</section>
+<style>
+.faq-block { margin: 2em 0; }
+.faq-block ul { list-style: none; padding: 0; }
+.faq-block li { margin-bottom: 1em; }
+</style>

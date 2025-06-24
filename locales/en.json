@@ -1,0 +1,20 @@
+{
+  "site_title": "Global Tip Calculator",
+  "site_description": "Find out how much to tip in any country. Interactive calculator and service data.",
+  "tip_calculator": "Tip Calculator",
+  "amount": "Amount",
+  "country": "Country",
+  "service_type": "Service Type",
+  "calculate": "Calculate",
+  "typical_tip": "Typical Tip",
+  "total_with_tip": "Total with Tip",
+  "faq": "Frequently Asked Questions",
+  "related_countries": "Related Countries",
+  "change_language": "Change Language",
+  "no_data": "No data available for this country.",
+  "select_service": "Select a service",
+  "other_countries": "Other countries",
+  "adsense_notice": "This site uses Google AdSense for monetization.",
+  "affiliate_notice": "Affiliate links may generate a commission for us at no extra cost to you.",
+  "back_home": "Back to home"
+}

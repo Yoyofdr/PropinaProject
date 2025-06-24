@@ -1,0 +1,27 @@
+{
+  "country": "Georgia",
+  "slug": "tipping-in-georgia",
+  "language": "th",
+  "tip_percentages": {
+    "restaurant": 10,
+    "bar": 10,
+    "hotel": 10,
+    "taxi": 0
+  },
+  "faq": [
+    {
+      "q": "Is tipping mandatory in Georgia?",
+      "a": "Tipping is not mandatory, but it is customary to leave between 10% and 15% in restaurants."
+    }
+  ],
+  "related_countries": [],
+  "adsense_slots": [
+    "main",
+    "footer"
+  ],
+  "affiliate_links": {
+    "wise": "https://wise.com/",
+    "booking": "https://www.booking.com/",
+    "safetywing": "https://safetywing.com/"
+  }
+}

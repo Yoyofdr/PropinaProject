@@ -1,0 +1,14 @@
+---
+const { affiliateLinks, translations } = Astro.props;
+---
+<div class="affiliate-links">
+  <p>
+    <a href={affiliateLinks.wise} target="_blank" rel="noopener">Envía dinero al extranjero con Wise</a> |
+    <a href={affiliateLinks.booking} target="_blank" rel="noopener">Reserva tu hotel con Booking</a> |
+    <a href={affiliateLinks.safetywing} target="_blank" rel="noopener">Seguro de viaje con SafetyWing</a>
+  </p>
+</div>
+<style>
+.affiliate-links { margin: 2em 0; font-size: 1em; text-align: center; }
+.affiliate-links a { color: #0070f3; text-decoration: underline; margin: 0 0.5em; }
+</style>
