@@ -1,14 +1,81 @@
 ---
-const { affiliateLinks, translations } = Astro.props;
+const { affiliateLinks = {}, translations = {} } = Astro.props;
+const wise = affiliateLinks.wise || "#";
+const booking = affiliateLinks.booking || "#";
+const safetywing = affiliateLinks.safetywing || "#";
 ---
 <div class="affiliate-links">
   <p>
-    <a href={affiliateLinks.wise} target="_blank" rel="noopener">Envía dinero al extranjero con Wise</a> |
-    <a href={affiliateLinks.booking} target="_blank" rel="noopener">Reserva tu hotel con Booking</a> |
-    <a href={affiliateLinks.safetywing} target="_blank" rel="noopener">Seguro de viaje con SafetyWing</a>
+    <a href={wise} target="_blank" rel="noopener" aria-label={`Wise - ${translations["affiliate_wise"]}`}>{translations["affiliate_wise"]}</a>
+    <span class="separator">|</span>
+    <a href={booking} target="_blank" rel="noopener" aria-label={`Booking - ${translations["affiliate_booking"]}`}>{translations["affiliate_booking"]}</a>
+    <span class="break"></span>
+    <span class="separator">|</span>
+    <a href={safetywing} target="_blank" rel="noopener" aria-label={`SafetyWing - ${translations["affiliate_safetywing"]}`}>{translations["affiliate_safetywing"]}</a>
   </p>
 </div>
 <style>
-.affiliate-links { margin: 2em 0; font-size: 1em; text-align: center; }
-.affiliate-links a { color: #0070f3; text-decoration: underline; margin: 0 0.5em; }
+.affiliate-links {
+  margin: 2em 0;
+  font-size: 1.08em;
+  text-align: center;
+  background: #23272f;
+  color: #f4f4f5;
+  border-radius: 0.75em;
+  padding: 1.2em 0.5em;
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.12);
+  max-width: 600px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.affiliate-links p {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2em;
+}
+.affiliate-links a {
+  color: #60d7ff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  margin: 0 0.3em;
+  white-space: nowrap;
+}
+.separator {
+  color: #60d7ff;
+  font-weight: 400;
+  margin: 0 0.2em;
+}
+.break {
+  flex-basis: 100%;
+  height: 0;
+}
+@media (max-width: 600px) {
+  .affiliate-links p {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+  .separator {
+    display: none;
+  }
+  .break {
+    display: none;
+  }
+  .affiliate-links a {
+    margin: 0;
+    font-size: 1em;
+  }
+}
+.affiliate-links a:hover {
+  color: #fbbf24;
+}
+.affiliate-links a:focus {
+  outline: 2px solid #fbbf24;
+  outline-offset: 2px;
+  background: #23272f;
+}
 </style>

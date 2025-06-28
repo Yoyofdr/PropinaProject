@@ -1,30 +1,316 @@
 ---
-// Página de inicio con autodetección de idioma y redirección
-const supportedLangs = [
-  'es','en','fr','pt','de','zh','ru','ar','hi','ja','ko','tr','it','pl','nl','vi','sv','fi','el','th','he','hu','id','ms','ta','uk','ro','cs','da','fa','ur','sr','bg','sk','hr','nb','fil','bn','gu','ml'
+import countriesEn from '../data/en/countries.json';
+
+let searchTerm = '';
+const countries = countriesEn.filter(c => c && typeof c.name === 'string' && typeof c.slug === 'string' && typeof c.flag === 'string');
+const sortedCountries = countries.sort((a, b) => a.name.localeCompare(b.name, 'en'));
+const popularSlugs = [
+  'how-much-to-tip-in-united-states',
+  'how-much-to-tip-in-united-kingdom',
+  'how-much-to-tip-in-france',
+  'how-much-to-tip-in-japan',
+  'how-much-to-tip-in-brazil'
 ];
-const defaultLang = 'en';
-const defaultCountry = 'united-states-of-america';
+const popularCountries = sortedCountries.filter(c => popularSlugs.includes(c.slug));
+const filteredCountries = (term) => sortedCountries.filter(country => country.name.toLowerCase().includes(term.toLowerCase()));
 ---
 <html lang="en">
   <head>
-    <meta http-equiv="refresh" content="0; url=/${defaultLang}/tipping-in-${defaultCountry}" />
-    <script>
-      (function() {
-        const supported = new Set(["es","en","fr","pt","de","zh","ru","ar","hi","ja","ko","tr","it","pl","nl","vi","sv","fi","el","th","he","hu","id","ms","ta","uk","ro","cs","da","fa","ur","sr","bg","sk","hr","nb","fil","bn","gu","ml"]);
-        const navLang = (navigator.language || navigator.userLanguage || '').slice(0,2);
-        const lang = supported.has(navLang) ? navLang : 'en';
-        // Puedes mejorar esto para detectar país por IP si lo deseas
-        window.location.replace(`/${lang}/tipping-in-${defaultCountry}`);
-      })();
-    </script>
-    <title>Calculadora de Propinas Global</title>
-    <meta name="description" content="Descubre cuánto dejar de propina en cualquier país del mundo. Calculadora interactiva y datos por servicio." />
+    <meta charset="UTF-8">
+    <title>Tip Global Calculator | Tipping Guide for Every Country (2025)</title>
+    <meta name="description" content="Discover tipping customs, recommended percentages, and how much to tip in every country. The ultimate global tipping guide for travelers, backpackers, and business people in 2025." />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons/css/flag-icons.min.css" />
+    <style>
+      body, html {
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', Arial, sans-serif;
+        background: linear-gradient(120deg, #38bdf8 0%, #34b3a0 50%, #a78bfa 100%);
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2em 1em;
+      }
+      .hero {
+        text-align: center;
+        margin-bottom: 2.5em;
+      }
+      .hero-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 80px;
+        height: 80px;
+        background: rgba(255,255,255,0.18);
+        border-radius: 50%;
+        margin-bottom: 1.5em;
+      }
+      .main-title {
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.5em;
+        letter-spacing: 1px;
+        background: linear-gradient(90deg, #fff 60%, #dbeafe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .subtitle {
+        font-size: 1.25rem;
+        color: #f1f5f9;
+        margin-bottom: 2em;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .search-bar {
+        max-width: 400px;
+        margin: 0 auto 2em auto;
+        position: relative;
+      }
+      .search-input {
+        width: 100%;
+        padding: 0.9em 1.2em 0.9em 2.5em;
+        border-radius: 8px;
+        border: none;
+        font-size: 1.1em;
+        background: rgba(255,255,255,0.18);
+        color: #fff;
+        outline: none;
+        box-shadow: 0 2px 8px rgba(52,179,160,0.07);
+      }
+      .search-icon {
+        position: absolute;
+        left: 0.8em;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #bae6fd;
+        font-size: 1.2em;
+      }
+      .section-title {
+        font-size: 1.5em;
+        color: #fff;
+        margin-bottom: 1em;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5em;
+      }
+      .countries-grid-scrollable {
+        max-height: 340px;
+        overflow-y: auto;
+        background: rgba(255,255,255,0.10);
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(52,179,160,0.07);
+        margin-bottom: 2em;
+      }
+      .countries-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.7em;
+        width: 100%;
+        padding: 1em;
+        box-sizing: border-box;
+      }
+      .country-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #fff;
+        color: #222;
+        border-radius: 8px;
+        padding: 0.8em 0.5em;
+        text-align: center;
+        font-size: 1.05em;
+        font-weight: 500;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(52,179,160,0.07);
+        border: 1px solid #e5e7eb;
+        transition: background 0.18s, box-shadow 0.18s, border 0.18s, transform 0.18s;
+        cursor: pointer;
+        min-height: 90px;
+      }
+      .country-btn:hover, .country-btn:focus {
+        background: #e0f7f3;
+        border: 1.5px solid #34b3a0;
+        box-shadow: 0 4px 16px rgba(52,179,160,0.13);
+        color: #111;
+        transform: scale(1.05);
+      }
+      .country-flag {
+        width: 2.2em;
+        height: 2.2em;
+        margin-bottom: 0.3em;
+        border-radius: 50%;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        background: #f1f5f9;
+        object-fit: cover;
+      }
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.2em;
+        margin: 2em 0;
+      }
+      .feature-card {
+        background: rgba(255,255,255,0.60);
+        border-radius: 12px;
+        padding: 1.5em 1em;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(52,179,160,0.07);
+        transition: background 0.18s;
+      }
+      .feature-card:hover {
+        background: #fff;
+      }
+      .quick-tips {
+        background: rgba(255,255,255,0.10);
+        border-radius: 12px;
+        padding: 2em 1em;
+        margin: 2em 0;
+        color: #fff;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .footer {
+        text-align: center;
+        color: #f1f5f9;
+        font-size: 1em;
+        margin-top: 2em;
+        padding: 1.2em 0 0.5em 0;
+      }
+      .footer-link {
+        color: #bae6fd;
+        text-decoration: underline;
+        font-weight: 500;
+        margin-left: 0.5em;
+      }
+      .footer-link:hover {
+        color: #fff;
+      }
+      @media (max-width: 900px) {
+        .container {
+          padding: 1em 0.2em;
+        }
+        .main-title {
+          font-size: 2rem;
+        }
+        .countries-grid {
+          grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        }
+      }
+      @media (max-width: 600px) {
+        .main-title {
+          font-size: 1.3rem;
+        }
+        .countries-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .country-btn {
+          font-size: 0.98em;
+          padding: 0.5em 0.2em;
+        }
+        .country-flag {
+          width: 1.3em;
+          height: 1.3em;
+        }
+      }
+    </style>
   </head>
   <body>
-    <noscript>
-      <h1>Calculadora de Propinas Global</h1>
-      <p>Redirigiendo a la versión en inglés...</p>
-    </noscript>
+    <div class="container">
+      <!-- Hero Section -->
+      <div class="hero">
+        <h1 class="main-title">Tip Global Calculator</h1>
+        <p class="subtitle">Discover the ultimate global tipping guide. Instantly learn how much to tip in restaurants, hotels, taxis, and more in every country. Perfect for travelers, backpackers, and business professionals.</p>
+      </div>
+      <!-- Popular Countries -->
+      <div>
+        <h2 class="section-title"><span role="img" aria-label="star">&#11088;&#65039;</span><span>Popular Destinations</span></h2>
+        <div class="countries-grid">
+          {popularCountries.map(country => (
+            <a href={'/en/' + country.slug} class="country-btn" title={'Tipping in ' + country.name}>
+              <img src={`https://hatscripts.github.io/circle-flags/flags/${country.flag.toLowerCase()}.svg`} alt={`Flag of ${country.name}`} class="country-flag" loading="lazy" />
+              <span>{country.name}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+      <!-- All Countries -->
+      <div style="margin-top:2em;">
+        <h2 class="section-title"><span role="img" aria-label="globe">&#127757;</span><span>All Countries</span></h2>
+        <div class="countries-grid-scrollable">
+          <div class="countries-grid">
+            {filteredCountries(searchTerm).map(country => (
+              <a href={'/en/' + country.slug} class="country-btn" title={'Tipping in ' + country.name}>
+                <img src={`https://hatscripts.github.io/circle-flags/flags/${country.flag.toLowerCase()}.svg`} alt={`Flag of ${country.name}`} class="country-flag" loading="lazy" />
+                <span>{country.name}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+      <!-- Features -->
+      <div class="features-grid">
+        <div class="feature-card">
+          <div style="font-size:2em;">📍</div>
+          <h3>Global Coverage</h3>
+          <p>Find tipping rules for restaurants, bars, taxis, hotels and more in every country.</p>
+        </div>
+        <div class="feature-card">
+          <div style="font-size:2em;">⚡</div>
+          <h3>Instant Results</h3>
+          <p>Get immediate calculations and avoid awkward moments with accurate tipping amounts.</p>
+        </div>
+        <div class="feature-card">
+          <div style="font-size:2em;">🌐</div>
+          <h3>Trusted Worldwide</h3>
+          <p>Used by travelers, digital nomads and business people around the globe.</p>
+        </div>
+        <div class="feature-card">
+          <div style="font-size:2em;">⭐</div>
+          <h3>Always Updated</h3>
+          <p>100% free, fast and always up to date with the latest tipping customs.</p>
+        </div>
+      </div>
+      <!-- Quick Tips -->
+      <div class="quick-tips">
+        <h3 style="font-size:1.2em; font-weight:700; margin-bottom:1em; text-align:center;">Quick Tipping Tips</h3>
+        <div style="display:grid; grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(2,auto); gap:1.2em;">
+          <div>
+            <h4 style="font-weight:600; margin-bottom:0.5em;">🍽️ Restaurants</h4>
+            <p style="font-size:0.98em;">Most countries expect 10-15% for good service, but some include service charges.</p>
+          </div>
+          <div>
+            <h4 style="font-weight:600; margin-bottom:0.5em;">🚕 Taxis</h4>
+            <p style="font-size:0.98em;">Round up to the nearest convenient amount or add 10% in most Western countries.</p>
+          </div>
+          <div>
+            <h4 style="font-weight:600; margin-bottom:0.5em;">🏨 Hotels</h4>
+            <p style="font-size:0.98em;">Tip housekeeping $2-5 per night and bellhops $1-2 per bag in most countries.</p>
+          </div>
+          <div>
+            <h4 style="font-weight:600; margin-bottom:0.5em;">☕ Cafés</h4>
+            <p style="font-size:0.98em;">Small change or rounding up is usually sufficient for counter service.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Cookie Policy Notice -->
+      <div style="background:rgba(255,255,255,0.85);border-radius:12px;padding:1.2em 1em;margin:2em auto 0 auto;max-width:700px;color:#23272f;font-size:1.05em;box-shadow:0 2px 8px rgba(52,179,160,0.07);">
+        <strong>Cookie Policy:</strong> We use our own and third-party cookies to improve your experience, show personalized ads, and analyze traffic. By browsing this site, you accept the use of cookies. <a href="/cookies" style="color:#34b3a0;text-decoration:underline;font-weight:500;">Learn more</a>.
+      </div>
+      <!-- Footer -->
+      <footer class="footer">
+        <div>
+          &copy; {new Date().getFullYear()} Tip Global Calculator. All rights reserved.
+          <a href="/privacy" class="footer-link">Privacy Policy</a>
+        </div>
+      </footer>
+    </div>
   </body>
-</html> 
+</html>

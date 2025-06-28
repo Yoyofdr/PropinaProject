@@ -28,11 +28,11 @@
 			"dest": "_render"
 		},
 		{
-			"src": "^/privacidad/?$",
+			"src": "^/en(?:/(.*?))?/?$",
 			"dest": "_render"
 		},
 		{
-			"src": "^/([^/]+?)(?:/(.*?))?/?$",
+			"src": "^/privacy/?$",
 			"dest": "_render"
 		},
 		{

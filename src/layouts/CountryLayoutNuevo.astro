@@ -1,79 +1,377 @@
 ---
-import LanguageSwitcher from '../components/LanguageSwitcher.astro';
-import TipCalculator from '../components/TipCalculator.astro';
+import TipCalculator from '../components/TipCalculator.jsx';
+import '../components/TipCalculator.css';
 import CountryTable from '../components/CountryTable.astro';
 import FaqBlock from '../components/FaqBlock.astro';
 import AdsenseBlock from '../components/AdsenseBlock.astro';
 import AffiliateLinks from '../components/AffiliateLinks.astro';
-const { content, translations, availableLangs, currentLang, countrySlug, hreflangs } = Astro.props;
-const socialImage = `/social/${content.slug}.jpg`;
-const ogImage = `https://www.tu-dominio.com${socialImage}`;
+const { content, translations, countrySlug } = Astro.props;
+const ogImage = "https://www.tippingin.com/social/social-default.jpg";
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  'name': `${translations["site_title"]} | ${content.country}`,
+  'description': `How much do you tip in ${content.country}? Find out the tipping culture, recommended percentages and use our tip calculator.`
+};
+const baseUrl = 'https://www.tippingin.com';
+const pageTitle = `How much to tip in ${content.country} (${new Date().getFullYear()}) | ${translations["site_title"]}`;
+const metaDescription = `How much to tip in ${content.country}? Discover the tipping culture, recommended percentages and use our tip calculator.`;
 ---
-<html lang={currentLang}>
-  <head>
-    <title>{`${translations["site_title"]} | ${content.country} - ${new Date().getFullYear()}`}</title>
-    <meta name="description" content={`¿Cuánto se deja de propina en ${content.country}? Calculadora interactiva y guía actualizada ${new Date().getFullYear()} para restaurantes, hoteles, taxis, delivery y más. Descubre los porcentajes típicos y consejos locales para dejar propina en ${content.country}.`} />
-    <link rel="canonical" href={`https://www.tu-dominio.com/${currentLang}/${content.slug}`} />
-    {hreflangs && Object.entries(hreflangs).map(([lang, slug]) => (
-      <link rel="alternate" hreflang={lang} href={`https://www.tu-dominio.com/${lang}/${slug}`} />
-    ))}
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={`${translations["site_title"]} | ${content.country}`} />
-    <meta property="og:description" content={`¿Cuánto se deja de propina en ${content.country}? Calculadora y guía ${new Date().getFullYear()}.`} />
-    <meta property="og:url" content={`https://www.tu-dominio.com/${currentLang}/${content.slug}`} />
-    <meta property="og:site_name" content={translations["site_title"]} />
-    <meta property="og:image" content={ogImage} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={`${translations["site_title"]} | ${content.country}`} />
-    <meta name="twitter:description" content={`¿Cuánto se deja de propina en ${content.country}? Calculadora y guía ${new Date().getFullYear()}.`} />
-    <meta name="twitter:image" content={ogImage} />
-  </head>
-  <body>
-    <header>
-      <nav aria-label="Breadcrumb" class="breadcrumbs">
-        <ol>
-          <li><a href="/">{translations["site_title"]}</a></li>
-          <li aria-current="page">{content.country}</li>
-        </ol>
-      </nav>
-      <h1>{translations["site_title"]} - {content.country}</h1>
-      <LanguageSwitcher availableLangs={availableLangs} currentLang={currentLang} countrySlug={countrySlug} translations={translations} />
-    </header>
-    <main>
-      <h2>{content.country}: {translations["tip_calculator"]}</h2>
-      <AdsenseBlock slot="main" />
-      <TipCalculator tipPercentages={content.tip_percentages} translations={translations} />
-      <h2>{translations["typical_tip"]} por servicio</h2>
+<head>
+  <meta charset="UTF-8">
+  <title>{pageTitle}</title>
+  <meta name="description" content={metaDescription} />
+  <link rel="canonical" href={`${baseUrl}/en/tipping-in-${countrySlug}`} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={metaDescription} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:url" content={`${baseUrl}/en/tipping-in-${countrySlug}`} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={metaDescription} />
+  <meta name="twitter:image" content={ogImage} />
+  <meta name="twitter:url" content={`${baseUrl}/en/tipping-in-${countrySlug}`} />
+  {/* hreflang tags for English and Spanish as example */}
+  <link rel="alternate" hrefLang="en" href={`${baseUrl}/en/tipping-in-${countrySlug}`} />
+  <link rel="alternate" hrefLang="es" href={`${baseUrl}/es/tipping-in-${countrySlug}`} />
+  <link rel="alternate" hrefLang="x-default" href={`${baseUrl}/en/tipping-in-${countrySlug}`} />
+  {/* Improved Schema.org markup for Country */}
+  <script type="application/ld+json">{JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'Country',
+    'name': content.country,
+    'url': `${baseUrl}/en/tipping-in-${countrySlug}`,
+    'image': ogImage,
+    'description': metaDescription,
+    'mainEntityOfPage': `${baseUrl}/en/tipping-in-${countrySlug}`
+  })}</script>
+  {/* Breadcrumbs structured data */}
+  <script type="application/ld+json">{JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': [
+      {
+        '@type': 'ListItem',
+        'position': 1,
+        'name': 'Home',
+        'item': baseUrl + '/en/'
+      },
+      {
+        '@type': 'ListItem',
+        'position': 2,
+        'name': content.country,
+        'item': `${baseUrl}/en/tipping-in-${countrySlug}`
+      }
+    ]
+  })}</script>
+  {Array.isArray(content.faq) && content.faq.length > 0 && (
+    <script type="application/ld+json">{JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'mainEntity': content.faq.map(faq => ({
+        '@type': 'Question',
+        'name': faq.q,
+        'acceptedAnswer': {
+          '@type': 'Answer',
+          'text': faq.a
+        }
+      }))
+    })}</script>
+  )}
+</head>
+
+<div class="country-hero" role="banner" aria-label={`Country hero section for ${content.country}`}>
+  <div class="hero-content">
+    <img src={`https://flagcdn.com/${(content.flag || 'us').toLowerCase()}.svg`} alt={`Flag of ${content.country}`} class="country-flag" loading="lazy" />
+    <nav aria-label="Breadcrumb" class="breadcrumbs" style="margin-bottom: 0.5em;">
+      <ol style="list-style:none;display:flex;gap:0.5em;padding:0;margin:0;">
+        <li><a href="/en/">Home</a> &gt;</li>
+        <li aria-current="page">{content.country}</li>
+      </ol>
+    </nav>
+    <h1>{`How much to tip in ${content.country}`}</h1>
+    <p class="country-desc">{translations["tip_calculator_intro"]}</p>
+  </div>
+</div>
+
+<main class="country-main ordered-main" role="main">
+  <div class="ordered-header" style="text-align: center; width: 100vw; margin: 0; padding: 0;">
+    <h2 class="country-title" style="color: #fff; margin-bottom: 0.15em; display: block; margin-left: auto; margin-right: auto; width: 100%; text-align: center; font-size: 1.7rem;">{translations["tip_calculator"]}</h2>
+  </div>
+  <div class="ordered-content-vertical">
+    <div class="tip-card-wrapper" style="margin-top: 0; padding-top: 0;">
+      <TipCalculator tipPercentages={content.tip_percentages} translations={translations} showTitle={false} client:only="react" />
+    </div>
+    <div class="country-table-wrapper">
       <CountryTable tipPercentages={content.tip_percentages} translations={translations} />
-      <h2>{translations["faq"]}</h2>
-      <FaqBlock faq={content.faq} translations={translations} />
-      {content.related_countries && content.related_countries.length > 0 && (
-        <section>
-          <h2>{translations["related_countries"]}</h2>
-          <ul>
-            {content.related_countries.map(link => (
-              <li><a href={`/${link}`}>{link.replace(/-/g, ' ')}</a></li>
-            ))}
-          </ul>
-        </section>
-      )}
-      <section>
-        <h2>{translations["other_countries"] || 'Países populares'}</h2>
-        <ul>
-          <li><a href="/es/propina-en-espana">Propina en España</a></li>
-          <li><a href="/en/tipping-in-united-states-of-america">Tipping in USA</a></li>
-          <li><a href="/fr/pourboire-au-france">Pourboire en France</a></li>
-          <li><a href="/es/propina-en-mexico">Propina en México</a></li>
-        </ul>
-      </section>
-      <AffiliateLinks affiliateLinks={content.affiliate_links} translations={translations} />
-      <AdsenseBlock slot="footer" />
-    </main>
-    <footer>
-      <p>&copy; {new Date().getFullYear()} {translations["site_title"]}</p>
-      <p style="font-size:0.9em; color:#888;">{translations["adsense_notice"]} {translations["affiliate_notice"]}</p>
-      <p style="font-size:0.9em;"><a href="/privacidad" rel="nofollow">Política de privacidad</a> | <a href="/cookies" rel="nofollow">Cookies</a></p>
-    </footer>
-  </body>
-</html> 
+    </div>
+  </div>
+  <section class="card faq-card">
+    <h2>{translations["faq"]}</h2>
+    <FaqBlock faq={content.faq} translations={translations} />
+  </section>
+  <section class="card affiliate-card">
+    <AffiliateLinks affiliateLinks={{
+      wise: "https://wise.com/",
+      booking: "https://booking.com/",
+      safetywing: "https://safetywing.com/"
+    }} translations={translations} />
+  </section>
+  <section class="card related-countries-card" aria-label="Related countries">
+    <h2 style="color: #34b3a0;">Related countries</h2>
+    <ul style="display:flex;flex-wrap:wrap;gap:1em;justify-content:center;padding:0;list-style:none;">
+      {(content.relatedCountries || []).slice(0,3).map(rc => (
+        <li key={rc.slug}><a href={`/en/tipping-in-${rc.slug}`}>{rc.name}</a></li>
+      ))}
+    </ul>
+  </section>
+  <AdsenseBlock slot="main" />
+</main>
+
+{/* FAQ section at the very bottom */}
+{Array.isArray(content.faq) && content.faq.length > 0 && (
+  <section class="card faq-bottom-card" aria-label="Frequently Asked Questions" style="margin-top:2em;">
+    <h2 style="color:#34b3a0;">Frequently Asked Questions</h2>
+    <ul style="padding:0;list-style:none;max-width:700px;margin:0 auto;">
+      {content.faq.map((faq, idx) => (
+        <li key={idx} style="margin-bottom:1.5em;">
+          <strong style="display:block;margin-bottom:0.3em;">Q: {faq.q}</strong>
+          <span>A: {faq.a}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
+
+<footer class="country-footer">
+  <p>&copy; {new Date().getFullYear()} {translations["site_title"]} - {translations["all_rights_reserved"]}</p>
+</footer>
+
+<style>
+:root {
+  --primary: #34b3a0;
+  --secondary: #18181b;
+  --accent: #f8d90f;
+  --text: #f4f4f5;
+  --card-radius: 18px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.18);
+  --font-main: 'Segoe UI', 'Roboto', Arial, sans-serif;
+}
+body {
+  font-family: var(--font-main);
+  background: var(--secondary);
+  color: var(--text);
+  margin: 0;
+}
+.country-hero {
+  background: linear-gradient(120deg, var(--primary) 60%, var(--accent) 100%);
+  color: #fff;
+  padding: 2.2rem 0 1.2rem 0;
+  text-align: center;
+  position: relative;
+}
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  max-width: 98vw;
+  margin: 0 auto;
+}
+.country-flag {
+  height: 80px;
+  width: auto;
+  display: block;
+  margin: 0 auto 1.1rem auto;
+  box-shadow: 0 8px 32px rgba(52,179,160,0.25);
+  object-fit: contain;
+}
+.country-hero h1 {
+  font-size: 2.1rem;
+  margin: 0.3rem 0 0 0;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+.country-h2 {
+  font-size: 1.2rem;
+  color: #fff;
+  margin: 0.2em 0 0.2em 0;
+  font-weight: 500;
+}
+.country-h3 {
+  font-size: 1.05rem;
+  color: #e0e0e0;
+  margin: 0.1em 0 0.3em 0;
+  font-weight: 400;
+}
+.country-desc {
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+  color: #f5f5f5;
+}
+.country-main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2rem auto 3rem auto;
+  max-width: 1200px;
+}
+.card {
+  /* Eliminado el fondo blanco y el recuadro */
+  box-shadow: none;
+  background: none;
+  color: inherit;
+  padding: 0;
+  margin-bottom: 0;
+  max-width: none;
+}
+.tip-card-section {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+.calculator-card h2, .table-card h2, .faq-card h2 {
+  color: var(--primary);
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+.country-footer {
+  background: var(--primary);
+  color: #fff;
+  text-align: center;
+  padding: 1.2rem 0 1rem 0;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  margin-top: 2rem;
+  font-size: 1rem;
+}
+@media (max-width: 900px) {
+  .country-main {
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  .card {
+    max-width: 95vw;
+    min-width: unset;
+  }
+}
+.ordered-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+.ordered-header {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 2.5em auto;
+}
+.ordered-header .country-title {
+  margin-bottom: 4px !important;
+  text-align: left;
+}
+.ordered-content-vertical {
+  display: block;
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.tip-card-wrapper, .country-table-wrapper {
+  width: 100vw;
+  max-width: 100vw;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.country-table-wrapper {
+  margin-top: 1.5em;
+}
+@media (max-width: 900px) {
+  .ordered-header .country-title {
+    text-align: center;
+    margin-bottom: 4px !important;
+  }
+}
+@media (max-width: 600px) {
+  .country-hero {
+    padding: 1.1rem 0 0.7rem 0;
+  }
+  .hero-content {
+    gap: 0.4rem;
+    max-width: 99vw;
+  }
+  .country-flag {
+    height: 48px;
+    margin-bottom: 0.7rem;
+  }
+  .country-hero h1 {
+    font-size: 1.25rem;
+  }
+  .country-h2 {
+    font-size: 1.01rem;
+  }
+  .country-h3 {
+    font-size: 0.93rem;
+  }
+  .country-desc {
+    font-size: 0.98rem;
+    max-width: 98vw;
+  }
+  .country-title {
+    font-size: 1.1rem !important;
+    margin-bottom: 4px !important;
+  }
+  .ordered-header {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .tip-card-wrapper {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+  .ordered-main, .ordered-content-vertical {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+  }
+  .ordered-content-vertical {
+    display: flex;
+    flex-direction: column !important;
+    gap: 1em;
+    align-items: stretch;
+  }
+  .tip-card-wrapper, .country-table-wrapper {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-sizing: border-box;
+  }
+  .card {
+    padding: 0 0.5em;
+  }
+  .country-footer {
+    font-size: 0.95rem;
+    padding: 0.7rem 0 0.7rem 0;
+  }
+  .country-table-wrapper {
+    margin-top: 1em !important;
+  }
+}
+.faq-card h2 {
+  color: #fff !important;
+  text-align: center !important;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+}
+</style> 

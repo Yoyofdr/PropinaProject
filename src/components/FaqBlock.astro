@@ -1,5 +1,5 @@
 ---
-const { faq, translations } = Astro.props;
+const { faq = [], translations } = Astro.props;
 const faqSchema = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
@@ -10,12 +10,12 @@ const faqSchema = {
   }))
 };
 ---
-<section class="faq-block">
-  <h2>{translations["faq"]}</h2>
+<section class="faq-block" aria-labelledby="faq-title">
+  <h2 id="faq-title" style={{position: 'absolute', left: '-9999px', top: 'auto', width: '1px', height: '1px', overflow: 'hidden'}}>Preguntas frecuentes</h2>
   <ul>
     {faq.map(item => (
       <li>
-        <strong>{item.q}</strong>
+        <h3>{item.q}</h3>
         <div>{item.a}</div>
       </li>
     ))}
@@ -23,7 +23,26 @@ const faqSchema = {
   <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
 </section>
 <style>
-.faq-block { margin: 2em 0; }
-.faq-block ul { list-style: none; padding: 0; }
-.faq-block li { margin-bottom: 1em; }
+.faq-block {
+  margin: 2em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+}
+.faq-block ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.faq-block li {
+  margin-bottom: 1.2em;
+  max-width: 600px;
+}
+.faq-block strong {
+  display: block;
+  font-size: 1.1em;
+  margin-bottom: 0.9em;
+}
 </style>

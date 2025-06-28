@@ -1,14 +1,14 @@
 {
-  "site_title": "Calculadora de Propinas Global",
-  "site_description": "Descubre cuánto dejar de propina en cualquier país del mundo. Calculadora interactiva y datos por servicio.",
-  "tip_calculator": "Calculadora de propinas",
+  "site_title": "Calculadora Global de Propinas",
+  "site_description": "Descubre cuánto dejar de propina en cualquier país. Calculadora interactiva y datos por servicio.",
+  "tip_calculator": "Calculadora de Propinas",
   "amount": "Monto",
   "country": "País",
   "service_type": "Tipo de servicio",
   "calculate": "Calcular",
   "typical_tip": "Propina típica",
   "total_with_tip": "Total con propina",
-  "faq": "Preguntas frecuentes",
+  "faq": "Preguntas Frecuentes",
   "related_countries": "Países relacionados",
   "change_language": "Cambiar idioma",
   "no_data": "No hay datos disponibles para este país.",
@@ -16,5 +16,24 @@
   "other_countries": "Otros países",
   "adsense_notice": "Este sitio utiliza Google AdSense para monetización.",
   "affiliate_notice": "Los enlaces de afiliados pueden generar una comisión para nosotros sin costo extra para ti.",
-  "back_home": "Volver al inicio"
-}
+  "back_home": "Volver al inicio",
+  "notes": {
+    "standard_service": "Servicio estándar",
+    "per_round": "Por ronda o total",
+    "per_night": "Sobre el total o por noche",
+    "round_up_or_10": "Redondear o 10%",
+    "food_delivery": "Comida a domicilio",
+    "on_service_value": "Sobre el valor del servicio",
+    "hairdresser_barber": "Peluquería/barbería",
+    "per_person_or_group": "Por persona o grupo",
+    "per_parked_car": "Por cada auto estacionado",
+    "per_bag": "Por cada maleta",
+    "per_hotel_night": "Por noche de hotel",
+    "per_drink_or_round": "Por trago o ronda",
+    "per_person": "Por persona",
+    "per_special_request": "Por gestión especial"
+  },
+  "affiliate_wise": "Envía dinero al extranjero con Wise",
+  "affiliate_booking": "Reserva tu hotel con Booking",
+  "affiliate_safetywing": "Seguro de viaje con SafetyWing"
+} 

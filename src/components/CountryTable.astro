@@ -1,25 +1,80 @@
 ---
-const { tipPercentages, translations } = Astro.props;
+const { tipPercentages = {}, translations = {} } = Astro.props;
 ---
-<table class="country-table">
-  <thead>
-    <tr>
-      <th>{translations["service_type"]}</th>
-      <th>{translations["typical_tip"]}</th>
-      <th>Nota</th>
-    </tr>
-  </thead>
-  <tbody>
-    {Object.entries(tipPercentages).map(([service, data]) => (
+<div class="country-table-outer">
+  <table class="country-table">
+    <thead>
       <tr>
-        <td>{service}</td>
-        <td>{data.percent}%</td>
-        <td>{data.note}</td>
+        <th scope="col">{translations["service_type"]}</th>
+        <th scope="col">{translations["typical_tip"]}</th>
+        <th scope="col">Nota</th>
       </tr>
-    ))}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {Object.entries(tipPercentages).map(([service, data]) => (
+        <tr>
+          <td>{service}</td>
+          <td>{
+            data && typeof data === 'object' && data.percent !== undefined
+              ? `${data.percent}%`
+              : (typeof data === 'number' ? `${data}%` : '-')
+          }</td>
+          <td>{
+            data && typeof data === 'object'
+              ? (data.note_key ? (translations.notes?.[data.note_key] || "") : (data.note || ""))
+              : ''
+          }</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 <style>
-.country-table { margin: 2em 0; border-collapse: collapse; width: 100%; max-width: 600px; }
-.country-table th, .country-table td { border: 1px solid #eee; padding: 0.5em; text-align: left; }
+.country-table-outer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+  margin: 1em auto 0 auto;
+  box-sizing: border-box;
+}
+.country-table {
+  margin: 0 auto;
+  max-width: 100%;
+  width: auto;
+  box-sizing: border-box;
+}
+.country-table th, .country-table td {
+  border: 1px solid #444;
+  padding: 0.7em 1em;
+  text-align: left;
+}
+.country-table th {
+  background: #18181b;
+  color: #f8d90f;
+  font-weight: 600;
+}
+@media (max-width: 600px) {
+  .country-table-outer {
+    justify-content: center;
+    align-items: flex-start;
+    width: 100vw;
+    max-width: 100vw;
+    padding: 0;
+    margin: 0.7em 0 0 0;
+    overflow-x: auto;
+  }
+  .country-table {
+    font-size: 0.93em;
+    margin: 0 auto;
+    max-width: 100vw;
+    width: auto;
+    min-width: 320px;
+    box-sizing: border-box;
+  }
+  .country-table th, .country-table td {
+    padding: 0.5em 0.5em;
+  }
+}
 </style>
